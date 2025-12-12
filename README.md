@@ -181,16 +181,28 @@ Key endpoints:
 
 ## Development Roadmap
 
+### Completed Features
 - [x] Project setup and structure
-- [ ] Database models and migrations
-- [ ] Warehouse management API and UI
-- [ ] Inventory upload and parsing
-- [ ] Core allocation algorithm
-- [ ] Visualization components
-- [ ] Report generation
-- [ ] Advanced features (climate control, special handling)
-- [ ] Testing suite
-- [ ] Production deployment
+- [x] Database models and migrations (SQLAlchemy with Flask-Migrate)
+- [x] Warehouse management API (Full CRUD with Swagger docs)
+- [x] Warehouse management UI (React with Material-UI, full CRUD operations)
+- [x] Inventory upload API (Excel parsing with pandas)
+- [x] Frontend routing and layout (React Router with responsive navigation)
+- [x] API client setup (Axios with TypeScript types)
+
+### In Progress
+- [ ] Core allocation algorithm (height-first, multi-constraint optimization)
+- [ ] Inventory upload UI (File upload component with validation)
+- [ ] Zone management UI (Add/edit zones for warehouses)
+
+### Planned Features
+- [ ] Allocation API and service layer
+- [ ] Allocation planner UI (control panel + results display)
+- [ ] Visualization components (Chart.js, Recharts, D3.js)
+- [ ] Report generation (HTML/PDF export)
+- [ ] Advanced features (climate control, special handling, priority-based loading)
+- [ ] Testing suite (pytest for backend, Jest for frontend)
+- [ ] Production deployment (Docker Compose)
 
 ## Contributing
 
