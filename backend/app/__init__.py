@@ -23,6 +23,9 @@ def create_app(config_name='development'):
     cache.init_app(app)
     CORS(app, resources={r"/api/*": {"origins": app.config['CORS_ORIGINS']}})
 
+    # Import models for Flask-Migrate
+    from app import models  # noqa: F401
+
     # Register blueprints
     from app.api import api_bp
     app.register_blueprint(api_bp, url_prefix='/api/v1')
