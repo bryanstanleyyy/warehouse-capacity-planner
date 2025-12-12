@@ -18,13 +18,13 @@ api = Api(
 # Register namespaces
 from app.api.warehouses import ns as warehouses_ns
 from app.api.inventory import ns as inventory_ns
+from app.api.allocation import ns as allocation_ns
 
 api.add_namespace(warehouses_ns, path='/warehouses')
 api.add_namespace(inventory_ns, path='/inventory')
+api.add_namespace(allocation_ns, path='/allocation')
 
 # Additional namespaces will be added as they are created
-# from app.api.allocation import ns as allocation_ns
 # from app.api.reports import ns as reports_ns
 #
-# api.add_namespace(allocation_ns, path='/allocation')
 # api.add_namespace(reports_ns, path='/reports')
