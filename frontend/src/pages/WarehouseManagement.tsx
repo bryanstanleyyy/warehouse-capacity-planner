@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
   Button,
   Card,
   CardContent,
+  CardActions,
   Grid,
   IconButton,
   Chip,
@@ -26,6 +28,7 @@ import type { Warehouse, WarehouseInput } from '../types/warehouse';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 
 export default function WarehouseManagement() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -242,6 +245,14 @@ export default function WarehouseManagement() {
                     )}
                   </Box>
                 </CardContent>
+                <CardActions>
+                  <Button
+                    size="small"
+                    onClick={() => navigate(`/warehouses/${warehouse.id}`)}
+                  >
+                    View Details
+                  </Button>
+                </CardActions>
               </Card>
             </Grid>
           ))}

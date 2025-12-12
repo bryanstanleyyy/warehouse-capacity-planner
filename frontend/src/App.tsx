@@ -5,6 +5,7 @@ import theme from './theme';
 import MainLayout from './layouts/MainLayout';
 import Dashboard from './pages/Dashboard';
 import WarehouseManagement from './pages/WarehouseManagement';
+import WarehouseDetail from './pages/WarehouseDetail';
 import InventoryManagement from './pages/InventoryManagement';
 import AllocationPlanner from './pages/AllocationPlanner';
 
@@ -28,6 +29,7 @@ function App() {
             <Route path="/" element={<MainLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="warehouses" element={<WarehouseManagement />} />
+              <Route path="warehouses/:id" element={<WarehouseDetail />} />
               <Route path="inventory" element={<InventoryManagement />} />
               <Route path="allocation" element={<AllocationPlanner />} />
             </Route>
