@@ -195,9 +195,9 @@ Key endpoints:
 - [x] **Core allocation engine** - Height-first, multi-constraint optimization algorithm ⭐
 - [x] **Allocation API** - Run analysis, save results, compare allocations
 - [x] **Allocation service layer** - Business logic with engine integration
+- [x] **Inventory upload UI** - File upload with drag-and-drop, table view, and Excel processing
 
 ### In Progress 🚧
-- [ ] Inventory upload UI (File upload component with drag-and-drop)
 - [ ] Allocation planner UI (control panel + results display)
 
 ### Planned Features 📋
