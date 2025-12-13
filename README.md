@@ -4,6 +4,10 @@
 
 A full-stack web application for warehouse capacity planning and space optimization. Features multi-constraint allocation algorithms, visual planning tools, and comprehensive reporting.
 
+**Project Status:** 🟢 Core features complete | 17 features implemented | ~75% complete
+
+**Live Demo:** *Coming soon*
+
 ## Overview
 
 Warehouse Capacity Planner helps logistics managers and warehouse operators optimize space utilization by:
@@ -12,6 +16,15 @@ Warehouse Capacity Planner helps logistics managers and warehouse operators opti
 - Accounting for real-world space utilization factors
 - Generating detailed allocation reports and visualizations
 - Supporting climate-controlled zones and special handling requirements
+
+## Key Highlights
+
+✨ **Full-Stack Implementation** - Complete React TypeScript frontend with Flask Python backend
+🎯 **Advanced Algorithm** - Height-first multi-constraint optimization with configurable space utilization factors
+📊 **Data Visualization** - Interactive Chart.js graphs showing zone utilization and allocation metrics
+📁 **Excel Integration** - Upload and parse inventory data with automatic calculations
+🎨 **Modern UI/UX** - Material-UI components with responsive design and intuitive workflows
+🔧 **Production Ready** - Docker containerization, database migrations, and API documentation
 
 ## Features
 
@@ -198,6 +211,7 @@ Key endpoints:
 - [x] **Inventory upload UI** - File upload with drag-and-drop, table view, and Excel processing
 - [x] **Allocation planner UI** - Control panel with inventory/warehouse selection and comprehensive results display
 - [x] **Visualization components** - Chart.js zone utilization bar chart and allocation summary donut chart
+- [x] **Dashboard** - Live statistics, quick actions, and guided user onboarding
 
 ### Planned Features 📋
 - [ ] Report generation (HTML/PDF export with item manifests)
