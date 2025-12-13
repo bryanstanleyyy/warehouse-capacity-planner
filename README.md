@@ -197,9 +197,9 @@ Key endpoints:
 - [x] **Allocation service layer** - Business logic with engine integration
 - [x] **Inventory upload UI** - File upload with drag-and-drop, table view, and Excel processing
 - [x] **Allocation planner UI** - Control panel with inventory/warehouse selection and comprehensive results display
+- [x] **Visualization components** - Chart.js zone utilization bar chart and allocation summary donut chart
 
 ### Planned Features 📋
-- [ ] Visualization components (Chart.js zone utilization, allocation diagrams)
 - [ ] Report generation (HTML/PDF export with item manifests)
 - [ ] Advanced allocation features (climate control priority, special handling zones)
 - [ ] Testing suite (pytest for backend, Jest for frontend)
