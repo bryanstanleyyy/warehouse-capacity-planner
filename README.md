@@ -95,7 +95,7 @@ warehouse-capacity-planner/
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/warehouse-capacity-planner.git
+git clone https://github.com/bryanstanleyyy/warehouse-capacity-planner.git
 cd warehouse-capacity-planner
 
 # Start with Docker Compose
@@ -229,7 +229,7 @@ MIT License - see LICENSE file for details
 
 ## Author
 
-**Bryan** - [GitHub Profile](https://github.com/YOUR_USERNAME)
+**Bryan** - [GitHub Profile](https://github.com/bryanstanleyyy)
 
 ## Acknowledgments
 
