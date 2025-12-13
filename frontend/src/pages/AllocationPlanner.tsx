@@ -39,6 +39,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { inventoryApi } from '../api/inventory';
 import { warehouseApi } from '../api/warehouses';
 import { allocationApi } from '../api/allocation';
+import { ZoneUtilizationChart } from '../components/allocation/ZoneUtilizationChart';
+import { AllocationSummaryChart } from '../components/allocation/AllocationSummaryChart';
 import type { AllocationResult } from '../types/allocation';
 
 export default function AllocationPlanner() {
@@ -298,6 +300,18 @@ export default function AllocationPlanner() {
                         </Typography>
                       </CardContent>
                     </Card>
+                  </Grid>
+                </Grid>
+
+                {/* Visualization Charts */}
+                <Grid container spacing={3} sx={{ mb: 3 }}>
+                  <Grid item xs={12} md={6}>
+                    <AllocationSummaryChart summary={allocationResult.allocation_data.summary} />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <ZoneUtilizationChart
+                      zoneAllocations={allocationResult.allocation_data.zone_allocations}
+                    />
                   </Grid>
                 </Grid>
 
