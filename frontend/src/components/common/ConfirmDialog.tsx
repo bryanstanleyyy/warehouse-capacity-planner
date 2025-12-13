@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -15,9 +16,10 @@ interface ConfirmDialogProps {
   onCancel: () => void;
   confirmText?: string;
   cancelText?: string;
+  confirmColor?: 'primary' | 'secondary' | 'error' | 'warning' | 'info' | 'success';
 }
 
-export default function ConfirmDialog({
+export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   open,
   title,
   message,
@@ -25,19 +27,27 @@ export default function ConfirmDialog({
   onCancel,
   confirmText = 'Confirm',
   cancelText = 'Cancel',
-}: ConfirmDialogProps) {
+  confirmColor = 'error',
+}) => {
   return (
-    <Dialog open={open} onClose={onCancel}>
-      <DialogTitle>{title}</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={onCancel}
+      aria-labelledby="confirm-dialog-title"
+      aria-describedby="confirm-dialog-description"
+    >
+      <DialogTitle id="confirm-dialog-title">{title}</DialogTitle>
       <DialogContent>
-        <DialogContentText>{message}</DialogContentText>
+        <DialogContentText id="confirm-dialog-description">{message}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onCancel}>{cancelText}</Button>
-        <Button onClick={onConfirm} color="error" variant="contained">
+        <Button onClick={onCancel} color="inherit">
+          {cancelText}
+        </Button>
+        <Button onClick={onConfirm} color={confirmColor} variant="contained" autoFocus>
           {confirmText}
         </Button>
       </DialogActions>
     </Dialog>
   );
-}
+};
