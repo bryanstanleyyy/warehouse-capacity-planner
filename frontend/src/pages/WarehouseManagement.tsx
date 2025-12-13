@@ -25,7 +25,7 @@ import WarehouseIcon from '@mui/icons-material/Warehouse';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { warehouseApi } from '../api/warehouses';
 import type { Warehouse, WarehouseInput } from '../types/warehouse';
-import ConfirmDialog from '../components/common/ConfirmDialog';
+import { ConfirmDialog } from '../components/common/ConfirmDialog';
 
 export default function WarehouseManagement() {
   const navigate = useNavigate();

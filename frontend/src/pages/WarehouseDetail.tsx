@@ -29,7 +29,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { warehouseApi } from '../api/warehouses';
 import type { Zone, ZoneInput } from '../types/warehouse';
 import ZoneDialog from '../components/warehouse/ZoneDialog';
-import ConfirmDialog from '../components/common/ConfirmDialog';
+import { ConfirmDialog } from '../components/common/ConfirmDialog';
 
 export default function WarehouseDetail() {
   const { id } = useParams<{ id: string }>();
