@@ -86,7 +86,7 @@ class AllocationAnalyze(Resource):
 
     @ns.doc('run_allocation')
     @ns.expect(allocation_request_model)
-    @ns.marshal_with(allocation_result_detail_model, code=201)
+    @ns.response(201, 'Allocation completed')
     def post(self):
         """Run allocation analysis for an inventory upload against a warehouse."""
         data = request.json
@@ -101,8 +101,11 @@ class AllocationAnalyze(Resource):
             )
 
             # Return full result with allocation data
-            response = result.to_dict(include_data=True)
-            response.update(result.allocation_data)
+            response = result.to_dict(include_data=False)
+
+            # Add allocation_data fields at top level for API response
+            if result.allocation_data:
+                response['allocation_data'] = result.allocation_data
 
             return response, 201
 
@@ -140,7 +143,7 @@ class AllocationResultResource(Resource):
     """Allocation result operations."""
 
     @ns.doc('get_allocation_result')
-    @ns.marshal_with(allocation_result_detail_model)
+    @ns.response(200, 'Success')
     def get(self, result_id):
         """Get allocation result by ID with full details."""
         try:
@@ -148,8 +151,11 @@ class AllocationResultResource(Resource):
             result = allocation_service.get_allocation_result(result_id)
 
             # Return full result with allocation data
-            response = result.to_dict(include_data=True)
-            response.update(result.allocation_data)
+            response = result.to_dict(include_data=False)
+
+            # Add allocation_data fields at top level for API response
+            if result.allocation_data:
+                response['allocation_data'] = result.allocation_data
 
             return response
 

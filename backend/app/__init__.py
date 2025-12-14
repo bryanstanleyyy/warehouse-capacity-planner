@@ -30,6 +30,10 @@ def create_app(config_name='development'):
     from app.api import api_bp
     app.register_blueprint(api_bp, url_prefix='/api/v1')
 
+    # Register CLI commands
+    from app import cli
+    app.cli.add_command(cli.seed_data_command)
+
     # Health check endpoint
     @app.route('/health')
     def health_check():
