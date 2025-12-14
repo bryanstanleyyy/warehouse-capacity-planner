@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostic</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f0f0;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .ok { background: #4caf50; color: white; }
+        .error { background: #f44336; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Frontend Diagnostic</h1>
+    <div id="results"></div>
+
+    <script>
+        const results = document.getElementById('results');
+
+        // Test 1: Check if we can load
+        results.innerHTML += '<div class="status ok">✓ HTML loaded successfully</div>';
+
+        // Test 2: Check API connectivity
+        fetch('http://localhost:5000/health')
+            .then(res => res.json())
+            .then(data => {
+                results.innerHTML += '<div class="status ok">✓ Backend is running: ' + data.message + '</div>';
+            })
+            .catch(err => {
+                results.innerHTML += '<div class="status error">✗ Cannot connect to backend: ' + err.message + '</div>';
+                results.innerHTML += '<div class="status error">Make sure backend is running on http://localhost:5000</div>';
+            });
+
+        // Test 3: JavaScript is working
+        results.innerHTML += '<div class="status ok">✓ JavaScript is working</div>';
+    </script>
+</body>
+</html>
