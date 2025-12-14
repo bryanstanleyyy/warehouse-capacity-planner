@@ -1,6 +1,7 @@
 import React from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import type { TooltipItem } from 'chart.js';
 import { Box, Paper, Typography, Grid } from '@mui/material';
 import { CheckCircle as CheckCircleIcon, Error as ErrorIcon } from '@mui/icons-material';
 import type { AllocationSummary } from '../../types/allocation';
@@ -33,7 +34,7 @@ export const AllocationSummaryChart: React.FC<AllocationSummaryChartProps> = ({ 
       },
       tooltip: {
         callbacks: {
-          label: function (context: any) {
+          label: function (context: TooltipItem<'doughnut'>) {
             const label = context.label || '';
             const value = context.parsed || 0;
             const total = summary.total_items;

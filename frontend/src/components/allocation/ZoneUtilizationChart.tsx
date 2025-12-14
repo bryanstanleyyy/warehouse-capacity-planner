@@ -9,6 +9,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import type { TooltipItem } from 'chart.js';
 import { Box, Paper, Typography } from '@mui/material';
 import type { ZoneAllocation } from '../../types/allocation';
 
@@ -56,7 +57,7 @@ export const ZoneUtilizationChart: React.FC<ZoneUtilizationChartProps> = ({
       },
       tooltip: {
         callbacks: {
-          label: function (context: any) {
+          label: function (context: TooltipItem<'bar'>) {
             return `${context.parsed.y.toFixed(1)}% utilized`;
           },
         },
@@ -67,8 +68,8 @@ export const ZoneUtilizationChart: React.FC<ZoneUtilizationChartProps> = ({
         beginAtZero: true,
         max: 100,
         ticks: {
-          callback: function (value: any) {
-            return value + '%';
+          callback: function (tickValue: string | number) {
+            return tickValue + '%';
           },
         },
         title: {
