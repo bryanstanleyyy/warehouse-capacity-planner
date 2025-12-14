@@ -31,7 +31,7 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState<string>('');
 
-  const validateFile = (file: File): boolean => {
+  const validateFile = useCallback((file: File): boolean => {
     setError('');
 
     // Check file type
@@ -51,14 +51,14 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
     }
 
     return true;
-  };
+  }, [accept, maxSize]);
 
-  const handleFileChange = (file: File) => {
+  const handleFileChange = useCallback((file: File) => {
     if (validateFile(file)) {
       setSelectedFile(file);
       onFileSelect(file);
     }
-  };
+  }, [validateFile, onFileSelect]);
 
   const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -90,7 +90,7 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
     if (files.length > 0) {
       handleFileChange(files[0]);
     }
-  }, [disabled, uploading]);
+  }, [disabled, uploading, handleFileChange]);
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;

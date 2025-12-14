@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -29,6 +29,7 @@ import {
   CloudUpload as CloudUploadIcon,
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import { inventoryApi } from '../api/inventory';
 import { FileUploadZone } from '../components/inventory/FileUploadZone';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
@@ -68,7 +69,7 @@ export default function InventoryManagement() {
       });
       handleCloseUploadDialog();
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       setSnackbar({
         open: true,
         message: error.response?.data?.message || 'Failed to upload inventory',

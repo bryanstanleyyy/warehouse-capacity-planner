@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Container,
   Box,
   Typography,
-  Grid,
   Paper,
   Card,
   CardContent,
@@ -26,6 +25,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Grid,
 } from '@mui/material';
 import {
   PlayArrow as PlayArrowIcon,
@@ -36,6 +36,7 @@ import {
   Inventory as InventoryIcon,
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import { inventoryApi } from '../api/inventory';
 import { warehouseApi } from '../api/warehouses';
 import { allocationApi } from '../api/allocation';
@@ -70,7 +71,7 @@ export default function AllocationPlanner() {
       setError('');
       queryClient.invalidateQueries({ queryKey: ['allocation-results'] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       setError(error.response?.data?.message || 'Failed to run allocation');
       setAllocationResult(null);
     },

@@ -26,6 +26,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
 import WarningIcon from '@mui/icons-material/Warning';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import { warehouseApi } from '../api/warehouses';
 import type { Zone, ZoneInput } from '../types/warehouse';
 import ZoneDialog from '../components/warehouse/ZoneDialog';
@@ -66,7 +67,7 @@ export default function WarehouseDetail() {
       setZoneDialogOpen(false);
       setSnackbar({ open: true, message: 'Zone created successfully', severity: 'success' });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       setSnackbar({
         open: true,
         message: error.response?.data?.message || 'Error creating zone',
@@ -85,7 +86,7 @@ export default function WarehouseDetail() {
       setZoneDialogOpen(false);
       setSnackbar({ open: true, message: 'Zone updated successfully', severity: 'success' });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       setSnackbar({
         open: true,
         message: error.response?.data?.message || 'Error updating zone',
@@ -104,7 +105,7 @@ export default function WarehouseDetail() {
       setSnackbar({ open: true, message: 'Zone deleted successfully', severity: 'success' });
       setSelectedZone(null);
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       setSnackbar({
         open: true,
         message: error.response?.data?.message || 'Error deleting zone',

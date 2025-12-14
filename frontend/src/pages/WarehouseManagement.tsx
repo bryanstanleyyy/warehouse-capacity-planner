@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   CardActions,
-  Grid,
   IconButton,
   Chip,
   Dialog,
@@ -17,12 +16,14 @@ import {
   TextField,
   Alert,
   Snackbar,
+  Grid,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import { warehouseApi } from '../api/warehouses';
 import type { Warehouse, WarehouseInput } from '../types/warehouse';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
@@ -60,7 +61,7 @@ export default function WarehouseManagement() {
       setSnackbar({ open: true, message: 'Warehouse created successfully', severity: 'success' });
       resetForm();
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       setSnackbar({ open: true, message: error.response?.data?.message || 'Error creating warehouse', severity: 'error' });
     },
   });
@@ -75,7 +76,7 @@ export default function WarehouseManagement() {
       setSnackbar({ open: true, message: 'Warehouse updated successfully', severity: 'success' });
       resetForm();
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       setSnackbar({ open: true, message: error.response?.data?.message || 'Error updating warehouse', severity: 'error' });
     },
   });
@@ -89,7 +90,7 @@ export default function WarehouseManagement() {
       setSnackbar({ open: true, message: 'Warehouse deleted successfully', severity: 'success' });
       setSelectedWarehouse(null);
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       setSnackbar({ open: true, message: error.response?.data?.message || 'Error deleting warehouse', severity: 'error' });
     },
   });

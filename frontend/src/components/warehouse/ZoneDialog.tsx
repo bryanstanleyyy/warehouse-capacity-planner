@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -42,6 +42,22 @@ export default function ZoneDialog({
     is_weather_zone: false,
   });
 
+  const resetForm = useCallback(() => {
+    setFormData({
+      name: '',
+      zone_order: 0,
+      area: 0,
+      height: 0,
+      strength: undefined,
+      climate_controlled: false,
+      temperature_min: undefined,
+      temperature_max: undefined,
+      special_handling: false,
+      container_capacity: 0,
+      is_weather_zone: false,
+    });
+  }, []);
+
   useEffect(() => {
     if (zone) {
       setFormData({
@@ -60,23 +76,7 @@ export default function ZoneDialog({
     } else {
       resetForm();
     }
-  }, [zone, open]);
-
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      zone_order: 0,
-      area: 0,
-      height: 0,
-      strength: undefined,
-      climate_controlled: false,
-      temperature_min: undefined,
-      temperature_max: undefined,
-      special_handling: false,
-      container_capacity: 0,
-      is_weather_zone: false,
-    });
-  };
+  }, [zone, open, resetForm]);
 
   const handleSubmit = () => {
     onSubmit(formData);
