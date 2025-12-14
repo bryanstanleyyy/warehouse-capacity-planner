@@ -30,7 +30,7 @@ export interface InventoryUpload {
   total_area: number;
   bsf_factor: number;
   upload_date: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, string | number | boolean>;
 }
 
 export interface InventoryUploadInput {

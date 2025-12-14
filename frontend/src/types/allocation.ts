@@ -106,6 +106,14 @@ export interface AllocationComparison {
     overall_utilization: number;
     created_at: string;
   }[];
-  best_fit: any;
-  best_utilization: any;
+  best_fit: {
+    id: number;
+    name: string;
+    allocation_rate: number;
+  } | null;
+  best_utilization: {
+    id: number;
+    name: string;
+    overall_utilization: number;
+  } | null;
 }
