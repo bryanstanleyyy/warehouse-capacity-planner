@@ -43,4 +43,28 @@ export const allocationApi = {
     });
     return response.data;
   },
+
+  // Export allocation result as HTML
+  exportHTML: async (resultId: number): Promise<Blob> => {
+    const response = await apiClient.get(`${BASE_URL}/results/${resultId}/export/html`, {
+      responseType: 'blob',
+    });
+    return response.data;
+  },
+
+  // Export allocation result as PDF
+  exportPDF: async (resultId: number): Promise<Blob> => {
+    const response = await apiClient.get(`${BASE_URL}/results/${resultId}/export/pdf`, {
+      responseType: 'blob',
+    });
+    return response.data;
+  },
+
+  // Export allocation result as CSV
+  exportCSV: async (resultId: number): Promise<Blob> => {
+    const response = await apiClient.get(`${BASE_URL}/results/${resultId}/export/csv`, {
+      responseType: 'blob',
+    });
+    return response.data;
+  },
 };

@@ -81,4 +81,12 @@ export const inventoryApi = {
     );
     return response.data;
   },
+
+  // Export inventory upload as XLSX
+  exportXLSX: async (uploadId: number): Promise<Blob> => {
+    const response = await apiClient.get(`${BASE_URL}/uploads/${uploadId}/export/xlsx`, {
+      responseType: 'blob',
+    });
+    return response.data;
+  },
 };
