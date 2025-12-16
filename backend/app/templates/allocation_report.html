@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Allocation Report - {{ warehouse_name }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            border-bottom: 4px solid #1976d2;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #1976d2;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .meta-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #1976d2;
+            margin-bottom: 30px;
+        }
+
+        .meta-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .meta-info strong {
+            color: #1976d2;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .summary-card.success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .summary-card.warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .summary-card.info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .summary-card h3 {
+            font-size: 14px;
+            font-weight: normal;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .summary-card .value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            color: #1976d2;
+            font-size: 24px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .zone-block {
+            background-color: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+        }
+
+        .zone-header {
+            background-color: #1976d2;
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .zone-header h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .zone-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .zone-stat {
+            background-color: rgba(255,255,255,0.1);
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+
+        th {
+            background-color: #f5f5f5;
+            color: #333;
+            font-weight: 600;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #ddd;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .badge-climate {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .badge-special {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .failures-section {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .failures-section h2 {
+            color: #d32f2f;
+            margin-bottom: 15px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+
+            .zone-block, .summary-card {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Warehouse Allocation Report</h1>
+            <div class="subtitle">Capacity Planning Analysis</div>
+        </div>
+
+        <!-- Meta Information -->
+        <div class="meta-info">
+            <p><strong>Warehouse:</strong> {{ warehouse_name }}</p>
+            <p><strong>Inventory Upload:</strong> {{ upload_name }}</p>
+            <p><strong>Result Name:</strong> {{ result.result_name or 'Unnamed' }}</p>
+            <p><strong>BSF Factor:</strong> {{ result.bsf_factor }}</p>
+            <p><strong>Generated:</strong> {{ generated_at }}</p>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="section">
+            <h2 class="section-title">Summary Statistics</h2>
+            <div class="summary-grid">
+                <div class="summary-card {% if summary.overall_fit %}success{% else %}warning{% endif %}">
+                    <h3>Overall Fit</h3>
+                    <div class="value">{{ 'SUCCESS' if summary.overall_fit else 'PARTIAL' }}</div>
+                </div>
+
+                <div class="summary-card info">
+                    <h3>Allocated Items</h3>
+                    <div class="value">{{ summary.total_allocated }}/{{ summary.total_items }}</div>
+                </div>
+
+                <div class="summary-card">
+                    <h3>Allocation Rate</h3>
+                    <div class="value">{{ "%.1f"|format(summary.allocation_rate) }}%</div>
+                </div>
+
+                <div class="summary-card">
+                    <h3>Space Utilization</h3>
+                    <div class="value">{{ "%.1f"|format(summary.overall_utilization) }}%</div>
+                </div>
+            </div>
+
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Total Warehouse Area</td>
+                    <td>{{ "%.2f"|format(summary.total_warehouse_area) }} sq ft</td>
+                </tr>
+                <tr>
+                    <td>Total Used Area</td>
+                    <td>{{ "%.2f"|format(summary.total_used_area) }} sq ft</td>
+                </tr>
+                <tr>
+                    <td>Total Items</td>
+                    <td>{{ summary.total_items }}</td>
+                </tr>
+                <tr>
+                    <td>Successfully Allocated</td>
+                    <td>{{ summary.total_allocated }}</td>
+                </tr>
+                <tr>
+                    <td>Failed Allocations</td>
+                    <td>{{ summary.total_failed }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Zone Allocations -->
+        <div class="section">
+            <h2 class="section-title">Zone Allocations</h2>
+
+            {% for zone in zone_allocations %}
+            <div class="zone-block">
+                <div class="zone-header">
+                    <h3>{{ zone.zone_info.name }}</h3>
+                    <div class="zone-stats">
+                        <div class="zone-stat">
+                            <strong>Area:</strong> {{ "%.2f"|format(zone.zone_info.area) }} sq ft
+                        </div>
+                        <div class="zone-stat">
+                            <strong>Height:</strong> {{ "%.2f"|format(zone.zone_info.height) }} ft
+                        </div>
+                        <div class="zone-stat">
+                            <strong>Utilization:</strong> {{ "%.1f"|format(zone.area_utilization) }}%
+                        </div>
+                        <div class="zone-stat">
+                            <strong>Items:</strong> {{ zone.total_items }}
+                        </div>
+                        {% if zone.zone_info.climate_controlled %}
+                        <div class="zone-stat">
+                            <span class="badge badge-climate">Climate Controlled</span>
+                        </div>
+                        {% endif %}
+                        {% if zone.zone_info.special_handling %}
+                        <div class="zone-stat">
+                            <span class="badge badge-special">Special Handling</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Category</th>
+                            <th>Qty</th>
+                            <th>Height (ft)</th>
+                            <th>Area (sq ft)</th>
+                            <th>Weight (lbs)</th>
+                            <th>PSF</th>
+                            <th>Requirements</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in zone.allocated_items %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.category or '-' }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ "%.2f"|format(item.height) }}</td>
+                            <td>{{ "%.2f"|format(item.area) }}</td>
+                            <td>{{ "%.2f"|format(item.weight) }}</td>
+                            <td>{{ "%.2f"|format(item.psf) }}</td>
+                            <td>
+                                {% if item.requires_climate_control %}
+                                <span class="badge badge-climate">Climate</span>
+                                {% endif %}
+                                {% if item.requires_special_handling %}
+                                <span class="badge badge-special">Special</span>
+                                {% endif %}
+                                {% if not item.requires_climate_control and not item.requires_special_handling %}
+                                -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Failed Allocations -->
+        {% if failures %}
+        <div class="section">
+            <div class="failures-section">
+                <h2>Failed Allocations ({{ failures|length }} items)</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Category</th>
+                            <th>Qty</th>
+                            <th>Height (ft)</th>
+                            <th>Area (sq ft)</th>
+                            <th>PSF</th>
+                            <th>Failure Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in failures %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.category or '-' }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ "%.2f"|format(item.height) }}</td>
+                            <td>{{ "%.2f"|format(item.required_area) }}</td>
+                            <td>{{ "%.2f"|format(item.psf) }}</td>
+                            <td>{{ item.failure_reason }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Generated with Warehouse Capacity Planner</p>
+            <p>{{ generated_at }}</p>
+        </div>
+    </div>
+</body>
+</html>

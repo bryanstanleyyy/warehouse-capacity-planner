@@ -1,7 +1,8 @@
 """Allocation API endpoints."""
-from flask import request
+from flask import request, make_response
 from flask_restx import Namespace, Resource, fields
 from app.services.allocation_service import AllocationService
+from app.services.report_service import ReportService
 
 # Create namespace
 ns = Namespace('allocation', description='Allocation operations')
@@ -197,5 +198,86 @@ class AllocationCompare(Resource):
 
         except ValueError as e:
             ns.abort(400, str(e))
+        except Exception as e:
+            ns.abort(500, f"Server error: {str(e)}")
+
+
+@ns.route('/results/<int:result_id>/export/html')
+@ns.param('result_id', 'Allocation result identifier')
+class AllocationExportHTML(Resource):
+    """Export allocation result as HTML."""
+
+    @ns.doc('export_html')
+    @ns.response(200, 'HTML file')
+    @ns.response(404, 'Result not found')
+    def get(self, result_id):
+        """Export allocation result as HTML report."""
+        try:
+            report_service = ReportService()
+            html_content = report_service.generate_html_report(result_id)
+
+            # Create response with appropriate headers
+            response = make_response(html_content)
+            response.headers['Content-Type'] = 'text/html; charset=utf-8'
+            response.headers['Content-Disposition'] = f'attachment; filename=allocation_{result_id}.html'
+
+            return response
+
+        except ValueError as e:
+            ns.abort(404, str(e))
+        except Exception as e:
+            ns.abort(500, f"Server error: {str(e)}")
+
+
+@ns.route('/results/<int:result_id>/export/pdf')
+@ns.param('result_id', 'Allocation result identifier')
+class AllocationExportPDF(Resource):
+    """Export allocation result as PDF."""
+
+    @ns.doc('export_pdf')
+    @ns.response(200, 'PDF file')
+    @ns.response(404, 'Result not found')
+    def get(self, result_id):
+        """Export allocation result as PDF report."""
+        try:
+            report_service = ReportService()
+            pdf_content = report_service.generate_pdf_report(result_id)
+
+            # Create response with appropriate headers
+            response = make_response(pdf_content)
+            response.headers['Content-Type'] = 'application/pdf'
+            response.headers['Content-Disposition'] = f'attachment; filename=allocation_{result_id}.pdf'
+
+            return response
+
+        except ValueError as e:
+            ns.abort(404, str(e))
+        except Exception as e:
+            ns.abort(500, f"Server error: {str(e)}")
+
+
+@ns.route('/results/<int:result_id>/export/csv')
+@ns.param('result_id', 'Allocation result identifier')
+class AllocationExportCSV(Resource):
+    """Export allocation result as CSV."""
+
+    @ns.doc('export_csv')
+    @ns.response(200, 'CSV file')
+    @ns.response(404, 'Result not found')
+    def get(self, result_id):
+        """Export allocation result as CSV file."""
+        try:
+            report_service = ReportService()
+            csv_content = report_service.generate_csv_export(result_id)
+
+            # Create response with appropriate headers
+            response = make_response(csv_content)
+            response.headers['Content-Type'] = 'text/csv; charset=utf-8'
+            response.headers['Content-Disposition'] = f'attachment; filename=allocation_{result_id}.csv'
+
+            return response
+
+        except ValueError as e:
+            ns.abort(404, str(e))
         except Exception as e:
             ns.abort(500, f"Server error: {str(e)}")
