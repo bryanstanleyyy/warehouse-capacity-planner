@@ -105,3 +105,6 @@ temp/
 *.tmp
 *.swp
 .cache/
+
+# Claude Code
+.claude/
