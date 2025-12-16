@@ -56,6 +56,22 @@ class AllocationEngine:
         # Track allocation failures
         allocation_failures = []
 
+        # Handle empty zones case - all items fail
+        if not zones:
+            for item in sorted_items:
+                allocation_failures.append({
+                    'item_id': item.get('id'),
+                    'item_name': item.get('name', 'Unknown'),
+                    'reason': 'No zones available'
+                })
+            summary = self._calculate_summary(zone_allocations, allocation_failures)
+            return {
+                'zone_allocations': zone_allocations,
+                'failures': allocation_failures,
+                'overall_fit': False,
+                'summary': summary
+            }
+
         # Pre-calculate zone characteristics for performance
         zone_heights = [zone['height'] for zone in zones]
         zone_strengths = [zone.get('strength', float('inf')) for zone in zones]

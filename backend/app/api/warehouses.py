@@ -93,6 +93,10 @@ class WarehouseList(Resource):
         """Create a new warehouse."""
         data = request.json
 
+        # Validate required fields
+        if not data.get('name'):
+            ns.abort(400, "Missing required field: name")
+
         # Check if warehouse name already exists
         if Warehouse.query.filter_by(name=data['name']).first():
             ns.abort(400, f"Warehouse with name '{data['name']}' already exists")
@@ -173,6 +177,12 @@ class ZoneList(Resource):
         """Add a zone to a warehouse."""
         warehouse = Warehouse.query.get_or_404(warehouse_id, description='Warehouse not found')
         data = request.json
+
+        # Validate required fields
+        required_fields = ['name', 'area', 'height']
+        missing_fields = [field for field in required_fields if not data.get(field)]
+        if missing_fields:
+            ns.abort(400, f"Missing required fields: {', '.join(missing_fields)}")
 
         zone = Zone(
             warehouse_id=warehouse_id,
