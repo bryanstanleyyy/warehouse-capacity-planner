@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Container,
   Box,
@@ -34,6 +35,10 @@ import {
   ExpandMore as ExpandMoreIcon,
   Warehouse as WarehouseIcon,
   Inventory as InventoryIcon,
+  Download as DownloadIcon,
+  OpenInNew as OpenInNewIcon,
+  TableChart as TableChartIcon,
+  Visibility as VisibilityIcon,
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -42,9 +47,11 @@ import { warehouseApi } from '../api/warehouses';
 import { allocationApi } from '../api/allocation';
 import { ZoneUtilizationChart } from '../components/allocation/ZoneUtilizationChart';
 import { AllocationSummaryChart } from '../components/allocation/AllocationSummaryChart';
+import { exportToHTML, viewHTMLReport, exportToCSV } from '../utils/exportUtils';
 import type { AllocationResult } from '../types/allocation';
 
 export default function AllocationPlanner() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const [selectedUploadId, setSelectedUploadId] = useState<number | ''>('');
@@ -53,6 +60,7 @@ export default function AllocationPlanner() {
   const [resultName, setResultName] = useState('');
   const [allocationResult, setAllocationResult] = useState<AllocationResult | null>(null);
   const [error, setError] = useState('');
+  const [exportingFormat, setExportingFormat] = useState<'html' | 'view' | 'csv' | null>(null);
 
   const { data: uploads = [] } = useQuery({
     queryKey: ['inventory-uploads'],
@@ -97,18 +105,66 @@ export default function AllocationPlanner() {
     });
   };
 
+  const handleExportHTML = async () => {
+    if (!allocationResult) return;
+    setExportingFormat('html');
+    try {
+      await exportToHTML(allocationResult.id, allocationResult.result_name || undefined);
+    } catch (err) {
+      setError('Failed to export HTML report');
+    } finally {
+      setExportingFormat(null);
+    }
+  };
+
+  const handleViewReport = async () => {
+    if (!allocationResult) return;
+    setExportingFormat('view');
+    try {
+      await viewHTMLReport(allocationResult.id);
+    } catch (err) {
+      setError('Failed to view report');
+    } finally {
+      setExportingFormat(null);
+    }
+  };
+
+  const handleExportCSV = async () => {
+    if (!allocationResult) return;
+    setExportingFormat('csv');
+    try {
+      await exportToCSV(allocationResult.id, allocationResult.result_name || undefined);
+    } catch (err) {
+      setError('Failed to export CSV file');
+    } finally {
+      setExportingFormat(null);
+    }
+  };
+
   const selectedUpload = uploads.find((u) => u.id === selectedUploadId);
   const selectedWarehouse = warehouses.find((w) => w.id === selectedWarehouseId);
 
   return (
     <Container maxWidth="xl">
       <Box sx={{ py: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Allocation Planner
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-          Optimize warehouse space usage with multi-constraint allocation analysis
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Box>
+            <Typography variant="h4" component="h1" gutterBottom>
+              Allocation Planner
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Optimize warehouse space usage with multi-constraint allocation analysis
+            </Typography>
+          </Box>
+          <Button
+            variant="outlined"
+            startIcon={<VisibilityIcon />}
+            onClick={() => navigate('/results')}
+          >
+            View Results
+          </Button>
+        </Box>
+        <Box sx={{ mb: 4 }} />
 
         <Grid container spacing={3}>
           {/* Left Panel - Control Panel */}
@@ -315,6 +371,39 @@ export default function AllocationPlanner() {
                     />
                   </Grid>
                 </Grid>
+
+                {/* Export Options */}
+                <Paper sx={{ p: 3, mb: 3 }}>
+                  <Typography variant="h6" gutterBottom>
+                    Export Report
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                    <Button
+                      variant="outlined"
+                      startIcon={<OpenInNewIcon />}
+                      onClick={handleViewReport}
+                      disabled={exportingFormat !== null}
+                    >
+                      {exportingFormat === 'view' ? 'Opening...' : 'View Report'}
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      startIcon={<DownloadIcon />}
+                      onClick={handleExportHTML}
+                      disabled={exportingFormat !== null}
+                    >
+                      {exportingFormat === 'html' ? 'Exporting...' : 'Export HTML'}
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      startIcon={<TableChartIcon />}
+                      onClick={handleExportCSV}
+                      disabled={exportingFormat !== null}
+                    >
+                      {exportingFormat === 'csv' ? 'Exporting...' : 'Export CSV'}
+                    </Button>
+                  </Box>
+                </Paper>
 
                 {/* Zone Allocations */}
                 <Paper sx={{ p: 3, mb: 3 }}>

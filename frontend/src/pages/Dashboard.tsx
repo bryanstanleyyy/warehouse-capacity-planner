@@ -16,7 +16,7 @@ import {
   Assessment as AssessmentIcon,
   Add as AddIcon,
   CloudUpload as CloudUploadIcon,
-  PlayArrow as PlayArrowIcon,
+  Visibility as VisibilityIcon,
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import { warehouseApi } from '../api/warehouses';
@@ -119,10 +119,10 @@ export default function Dashboard() {
                 <Button
                   variant="outlined"
                   fullWidth
-                  startIcon={<PlayArrowIcon />}
-                  onClick={() => navigate('/allocation')}
+                  startIcon={<VisibilityIcon />}
+                  onClick={() => navigate('/results')}
                 >
-                  Run Allocation
+                  View Results
                 </Button>
               </CardContent>
             </Card>

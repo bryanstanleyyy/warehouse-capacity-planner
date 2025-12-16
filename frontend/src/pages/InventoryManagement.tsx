@@ -27,6 +27,7 @@ import {
   Delete as DeleteIcon,
   Visibility as VisibilityIcon,
   CloudUpload as CloudUploadIcon,
+  Download as DownloadIcon,
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -52,6 +53,7 @@ export default function InventoryManagement() {
     message: '',
     severity: 'success' as 'success' | 'error',
   });
+  const [downloadingId, setDownloadingId] = useState<number | null>(null);
 
   const { data: uploads = [], isLoading } = useQuery({
     queryKey: ['inventory-uploads'],
@@ -156,6 +158,29 @@ export default function InventoryManagement() {
     navigate(`/inventory/${id}`);
   };
 
+  const handleDownloadExcel = async (id: number, uploadName: string) => {
+    setDownloadingId(id);
+    try {
+      const blob = await inventoryApi.exportXLSX(id);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${uploadName}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: 'Failed to download Excel file',
+        severity: 'error',
+      });
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -243,6 +268,14 @@ export default function InventoryManagement() {
                         title="View Details"
                       >
                         <VisibilityIcon />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleDownloadExcel(upload.id, upload.upload_name)}
+                        title="Download Excel"
+                        disabled={downloadingId === upload.id}
+                      >
+                        <DownloadIcon />
                       </IconButton>
                       <IconButton
                         size="small"
