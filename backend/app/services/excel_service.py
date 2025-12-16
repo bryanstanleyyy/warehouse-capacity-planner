@@ -107,6 +107,9 @@ class ExcelService:
         height_fields = ['height', 'h', 'ht']
         area_fields = ['area', 'sq_ft', 'sqft', 'square_feet']
         service_fields = ['service', 'branch', 'department', 'dept', 'division']
+        climate_fields = ['climate_control', 'requires_climate', 'climate', 'climate_controlled']
+        special_fields = ['special_handling', 'special', 'hazmat', 'fragile', 'requires_special']
+        priority_fields = ['priority', 'priority_order', 'order']
 
         # Extract values using flexible field matching
         normalized = {
@@ -120,6 +123,9 @@ class ExcelService:
             'area': ExcelService._get_numeric_value(item, area_fields),
             'service_branch': ExcelService._get_first_value(item, service_fields),
             'description': item.get('description') or item.get('desc'),
+            'requires_climate_control': ExcelService._get_boolean_value(item, climate_fields),
+            'requires_special_handling': ExcelService._get_boolean_value(item, special_fields),
+            'priority_order': ExcelService._get_numeric_value(item, priority_fields, default=999),
         }
 
         # Calculate area if not provided but length/width are available
@@ -180,6 +186,43 @@ class ExcelService:
                     if pd.isna(value):
                         continue
                     return float(value)
+                except (ValueError, TypeError):
+                    continue
+        return default
+
+    @staticmethod
+    def _get_boolean_value(item: Dict[str, Any],
+                          field_names: List[str],
+                          default: bool = False) -> bool:
+        """Get a boolean value from possible field names.
+
+        Args:
+            item: Item dictionary
+            field_names: List of possible field names
+            default: Default value if not found
+
+        Returns:
+            Boolean value or default
+        """
+        for field in field_names:
+            value = item.get(field)
+            if value is not None:
+                try:
+                    # Handle pandas NaN
+                    if pd.isna(value):
+                        continue
+
+                    # Handle various boolean representations
+                    if isinstance(value, bool):
+                        return value
+                    if isinstance(value, (int, float)):
+                        return bool(value)
+                    if isinstance(value, str):
+                        value_lower = value.lower().strip()
+                        if value_lower in ['true', 'yes', 'y', '1', 'x']:
+                            return True
+                        if value_lower in ['false', 'no', 'n', '0', '']:
+                            return False
                 except (ValueError, TypeError):
                     continue
         return default

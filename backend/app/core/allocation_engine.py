@@ -66,28 +66,53 @@ class AllocationEngine:
             required_area = item['area'] * (1 + self.bsf_factor)
             equipment_height = item['height']
             equipment_psf = item.get('psf', 0)
+            requires_climate = item.get('requires_climate_control', False)
+            requires_special = item.get('requires_special_handling', False)
 
             # Find eligible zones
             eligible_zones = []
 
             for zone_idx, zone_alloc in enumerate(zone_allocations):
-                # Check all constraints
-                if (equipment_height <= zone_heights[zone_idx] and
-                    required_area <= zone_alloc['remaining_area'] and
-                    equipment_psf <= zone_strengths[zone_idx]):
+                zone = zones[zone_idx]
 
-                    # Calculate height waste (prefer minimal waste)
-                    height_waste = zone_heights[zone_idx] - equipment_height
+                # Check basic constraints
+                if not (equipment_height <= zone_heights[zone_idx] and
+                        required_area <= zone_alloc['remaining_area'] and
+                        equipment_psf <= zone_strengths[zone_idx]):
+                    continue
 
-                    eligible_zones.append({
-                        'zone_idx': zone_idx,
-                        'height_waste': height_waste,
-                        'area_remaining': zone_alloc['remaining_area']
-                    })
+                # Check climate control requirement
+                if requires_climate and not zone.get('climate_controlled', False):
+                    continue
+
+                # Check special handling requirement
+                if requires_special and not zone.get('special_handling', False):
+                    continue
+
+                # Calculate height waste (prefer minimal waste)
+                height_waste = zone_heights[zone_idx] - equipment_height
+
+                # Calculate priority score (higher is better)
+                priority_score = 0
+
+                # Bonus for exact climate match
+                if requires_climate and zone.get('climate_controlled', False):
+                    priority_score += 1000
+
+                # Bonus for exact special handling match
+                if requires_special and zone.get('special_handling', False):
+                    priority_score += 1000
+
+                eligible_zones.append({
+                    'zone_idx': zone_idx,
+                    'priority_score': priority_score,
+                    'height_waste': height_waste,
+                    'area_remaining': zone_alloc['remaining_area']
+                })
 
             if eligible_zones:
-                # Sort by minimal height waste, then by available area
-                eligible_zones.sort(key=lambda x: (x['height_waste'], -x['area_remaining']))
+                # Sort by priority (DESC), minimal height waste, then by available area
+                eligible_zones.sort(key=lambda x: (-x['priority_score'], x['height_waste'], -x['area_remaining']))
 
                 # Allocate to best zone
                 best_zone = eligible_zones[0]
@@ -150,6 +175,10 @@ class AllocationEngine:
                 max_zone_area = max(za['remaining_area'] for za in zone_allocations)
                 max_zone_strength = max(zone_strengths)
 
+                # Check for climate/special zones availability
+                has_climate_zones = any(zone.get('climate_controlled', False) for zone in zones)
+                has_special_zones = any(zone.get('special_handling', False) for zone in zones)
+
                 failure_reasons = []
 
                 if equipment_height > max_zone_height:
@@ -167,13 +196,29 @@ class AllocationEngine:
                         f"Too heavy ({equipment_psf:.1f} PSF > {max_zone_strength:.1f} PSF max)"
                     )
 
+                # NEW: Check climate control requirement
+                if requires_climate and not has_climate_zones:
+                    failure_reasons.append("Requires climate control (no zones available)")
+                elif requires_climate:
+                    # Has climate zones but still failed - likely space issue
+                    failure_reasons.append("Requires climate control (no space in climate zones)")
+
+                # NEW: Check special handling requirement
+                if requires_special and not has_special_zones:
+                    failure_reasons.append("Requires special handling (no zones available)")
+                elif requires_special:
+                    # Has special zones but still failed - likely space issue
+                    failure_reasons.append("Requires special handling (no space in special zones)")
+
                 if not failure_reasons:
                     failure_reasons.append("No suitable zone found")
 
                 # Check if failure is just due to area (could fit if zone was empty)
                 can_theoretically_fit = (
                     equipment_height <= max_zone_height and
-                    equipment_psf <= max_zone_strength
+                    equipment_psf <= max_zone_strength and
+                    (not requires_climate or has_climate_zones) and
+                    (not requires_special or has_special_zones)
                 )
 
                 allocation_failures.append({
