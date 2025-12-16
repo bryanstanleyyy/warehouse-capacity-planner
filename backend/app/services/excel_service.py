@@ -32,8 +32,12 @@ class ExcelService:
             if df.empty:
                 raise ExcelParsingError("Excel file is empty")
 
-            # Clean column names (strip whitespace, lowercase)
+            # Clean column names (strip whitespace, lowercase, replace special chars)
             df.columns = df.columns.str.strip().str.lower()
+            # Replace parentheses and their contents with nothing, replace spaces with underscores
+            df.columns = df.columns.str.replace(r'\s*\([^)]*\)', '', regex=True)  # Remove (lbs), (ft), etc.
+            df.columns = df.columns.str.replace(r'\s+', '_', regex=True)  # Replace spaces with underscores
+            df.columns = df.columns.str.strip('_')  # Remove leading/trailing underscores
 
             # Extract metadata
             metadata = {
@@ -106,10 +110,10 @@ class ExcelService:
         width_fields = ['width', 'w']
         height_fields = ['height', 'h', 'ht']
         area_fields = ['area', 'sq_ft', 'sqft', 'square_feet']
-        service_fields = ['service', 'branch', 'department', 'dept', 'division']
+        service_fields = ['service_branch', 'service', 'branch', 'department', 'dept', 'division']
         climate_fields = ['climate_control', 'requires_climate', 'climate', 'climate_controlled']
         special_fields = ['special_handling', 'special', 'hazmat', 'fragile', 'requires_special']
-        priority_fields = ['priority', 'priority_order', 'order']
+        priority_fields = ['priority_order', 'priority', 'order']
 
         # Extract values using flexible field matching
         normalized = {

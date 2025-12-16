@@ -3,6 +3,7 @@ from typing import List, Dict, Any, Optional
 from werkzeug.datastructures import FileStorage
 import os
 import io
+import tempfile
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill
 from app.extensions import db
@@ -45,8 +46,9 @@ class InventoryService:
         if file_ext not in allowed_extensions:
             raise ValueError(f"Invalid file type. Allowed types: {', '.join(allowed_extensions)}")
 
-        # Save file temporarily
-        temp_path = os.path.join('/tmp', file.filename)
+        # Save file temporarily (cross-platform)
+        temp_dir = tempfile.gettempdir()
+        temp_path = os.path.join(temp_dir, file.filename)
         file.save(temp_path)
 
         try:
