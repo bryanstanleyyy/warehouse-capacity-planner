@@ -7,7 +7,9 @@ import Dashboard from './pages/Dashboard';
 import WarehouseManagement from './pages/WarehouseManagement';
 import WarehouseDetail from './pages/WarehouseDetail';
 import InventoryManagement from './pages/InventoryManagement';
+import InventoryDetail from './pages/InventoryDetail';
 import AllocationPlanner from './pages/AllocationPlanner';
+import AllocationResults from './pages/AllocationResults';
 
 // Create QueryClient for React Query
 const queryClient = new QueryClient({
@@ -31,7 +33,9 @@ function App() {
               <Route path="warehouses" element={<WarehouseManagement />} />
               <Route path="warehouses/:id" element={<WarehouseDetail />} />
               <Route path="inventory" element={<InventoryManagement />} />
+              <Route path="inventory/:id" element={<InventoryDetail />} />
               <Route path="allocation" element={<AllocationPlanner />} />
+              <Route path="results" element={<AllocationResults />} />
             </Route>
           </Routes>
         </BrowserRouter>
