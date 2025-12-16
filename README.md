@@ -4,7 +4,7 @@
 
 A full-stack web application for warehouse capacity planning and space optimization. Features multi-constraint allocation algorithms, visual planning tools, and comprehensive reporting.
 
-**Project Status:** 🟢 Core features complete | 17 features implemented | ~75% complete
+**Project Status:** 🟢 Core features complete | 22 features implemented | ~90% complete
 
 **Live Demo:** *Coming soon*
 
@@ -39,8 +39,9 @@ Warehouse Capacity Planner helps logistics managers and warehouse operators opti
   - Climate control requirements
   - Special handling needs
 - **Visual Analytics**: Interactive charts and diagrams showing zone utilization and allocation results
-- **Comprehensive Reporting**: Generate detailed HTML and PDF reports with item manifests and capacity analysis
+- **Comprehensive Reporting**: Generate detailed HTML and CSV reports with item manifests and capacity analysis, or view reports directly in the browser
 - **Priority-Based Loading**: Configure loading priorities by category to ensure critical items are allocated first
+- **Inventory Export**: Download uploaded inventory data as formatted Excel files for record-keeping and offline analysis
 
 ### Advanced Features
 - Climate-controlled zone management
@@ -67,7 +68,8 @@ Warehouse Capacity Planner helps logistics managers and warehouse operators opti
 - SQLAlchemy ORM
 - PostgreSQL (production) / SQLite (development)
 - pandas for data processing
-- ReportLab for PDF generation
+- openpyxl for Excel import/export
+- Jinja2 for HTML report templating
 
 ### Deployment
 - Docker & Docker Compose
@@ -147,25 +149,29 @@ npm run dev
 
 ## Usage
 
-1. **Create a Warehouse**: Define your warehouse with storage zones (area, height, floor strength)
-2. **Upload Inventory**: Import inventory data from an Excel file
-3. **Configure Parameters**: Set Space Utilization Factor (BSF) and priorities
+1. **Create a Warehouse**: Define your warehouse with storage zones (area, height, floor strength, climate control)
+2. **Upload Inventory**: Import inventory data from an Excel file (automatically calculates PSF and area)
+3. **Configure Parameters**: Set Space Utilization Factor (BSF) and give your allocation a name
 4. **Run Allocation**: Execute the allocation algorithm to optimize space usage
-5. **Review Results**: Analyze utilization charts and allocation details
-6. **Generate Reports**: Create detailed HTML or PDF reports
+5. **Review Results**: Analyze utilization charts, allocation details, and zone-by-zone breakdowns
+6. **Export Reports**: View reports in browser, download as HTML, or export to CSV
+7. **Manage Results**: Browse all previous allocation runs and download inventory data
 
 ## Algorithm
 
-The core allocation engine uses a **height-first optimization strategy**:
+The core allocation engine uses a **height-first optimization strategy with multi-constraint validation**:
 
 1. Sort items by height (tallest first)
-2. For each item, iterate through zones:
-   - Check height clearance
+2. For each item, find eligible zones by checking:
+   - Height clearance (item must fit under ceiling)
+   - Climate control requirements (if item requires climate control, zone must support it)
+   - Special handling requirements (if item requires special handling, zone must support it)
    - Calculate required area: `base_area × (1 + BSF)`
-   - Validate floor strength (PSF)
+   - Validate floor strength (PSF - pounds per square foot)
    - Check available capacity
-3. Allocate if all constraints pass
-4. Track failures with detailed reasons
+3. Prioritize zones that match climate/handling requirements (+1000 priority bonus)
+4. Allocate to best-fit zone (minimal height waste, then largest available area)
+5. Track failures with detailed reasons (height, area, PSF, climate, handling)
 
 The BSF (Broken Stow Factor / Space Utilization Factor) accounts for:
 - Aisles and walkways
@@ -184,9 +190,12 @@ http://localhost:5000/api/doc
 
 Key endpoints:
 - `POST /api/v1/warehouses` - Create warehouse
-- `POST /api/v1/inventory/upload` - Upload inventory
+- `POST /api/v1/inventory/uploads` - Upload inventory
+- `GET /api/v1/inventory/uploads/{id}/export/xlsx` - Export inventory as Excel
 - `POST /api/v1/allocation/analyze` - Run allocation
-- `POST /api/v1/reports/generate` - Generate report
+- `GET /api/v1/allocation/results` - List all allocation results
+- `GET /api/v1/allocation/results/{id}/export/html` - Export allocation as HTML
+- `GET /api/v1/allocation/results/{id}/export/csv` - Export allocation as CSV
 
 ## Screenshots
 
@@ -212,10 +221,13 @@ Key endpoints:
 - [x] **Allocation planner UI** - Control panel with inventory/warehouse selection and comprehensive results display
 - [x] **Visualization components** - Chart.js zone utilization bar chart and allocation summary donut chart
 - [x] **Dashboard** - Live statistics, quick actions, and guided user onboarding
+- [x] **Report generation** - HTML export, CSV export, and view-in-new-tab functionality with detailed item manifests ⭐
+- [x] **Advanced allocation features** - Climate control zone priority and special handling zone allocation ⭐
+- [x] **Inventory export** - Download uploaded inventory data as formatted Excel files
+- [x] **Allocation results viewer** - Browse and manage all previous allocation runs
+- [x] **Inventory detail pages** - Comprehensive view of uploaded inventory with summary statistics
 
 ### Planned Features 📋
-- [ ] Report generation (HTML/PDF export with item manifests)
-- [ ] Advanced allocation features (climate control priority, special handling zones)
 - [ ] Testing suite (pytest for backend, Jest for frontend)
 - [ ] Production deployment guide (Docker Compose orchestration)
 
