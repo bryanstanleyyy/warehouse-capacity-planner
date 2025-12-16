@@ -1,5 +1,5 @@
 """Inventory API endpoints."""
-from flask import request
+from flask import request, send_file
 from flask_restx import Namespace, Resource, fields
 from werkzeug.datastructures import FileStorage
 from app.services.inventory_service import InventoryService
@@ -187,3 +187,30 @@ class InventoryUploadBSF(Resource):
             return upload.to_dict()
         except ValueError as e:
             ns.abort(400, str(e))
+
+
+@ns.route('/uploads/<int:upload_id>/export/xlsx')
+@ns.param('upload_id', 'Upload identifier')
+class InventoryUploadExport(Resource):
+    """Export inventory upload as Excel file."""
+
+    @ns.doc('export_upload_xlsx')
+    @ns.produces(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'])
+    def get(self, upload_id):
+        """Export inventory upload as XLSX file."""
+        try:
+            inventory_service = InventoryService()
+            excel_buffer = inventory_service.export_to_excel(upload_id)
+
+            # Get upload for filename
+            upload = InventoryUpload.query.get_or_404(upload_id)
+            filename = f"{upload.upload_name or f'inventory_{upload_id}'}.xlsx"
+
+            return send_file(
+                excel_buffer,
+                mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                as_attachment=True,
+                download_name=filename
+            )
+        except Exception as e:
+            ns.abort(500, f"Error exporting Excel: {str(e)}")

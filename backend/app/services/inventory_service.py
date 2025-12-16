@@ -2,6 +2,9 @@
 from typing import List, Dict, Any, Optional
 from werkzeug.datastructures import FileStorage
 import os
+import io
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill
 from app.extensions import db
 from app.models import InventoryUpload, InventoryItem
 from app.services.excel_service import ExcelService, ExcelParsingError
@@ -248,3 +251,78 @@ class InventoryService:
             'climate_controlled_items': climate_controlled_count,
             'special_handling_items': special_handling_count
         }
+
+    @staticmethod
+    def export_to_excel(upload_id: int) -> io.BytesIO:
+        """Export inventory upload to Excel file.
+
+        Args:
+            upload_id: Upload ID
+
+        Returns:
+            BytesIO buffer containing Excel file
+
+        Raises:
+            NotFound: If upload doesn't exist
+        """
+        upload = InventoryUpload.query.get_or_404(upload_id)
+        items = upload.items.all()
+
+        # Create workbook
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Inventory"
+
+        # Header style
+        header_fill = PatternFill(start_color="366092", end_color="366092", fill_type="solid")
+        header_font = Font(bold=True, color="FFFFFF")
+
+        # Define headers
+        headers = [
+            'Name', 'Description', 'Quantity', 'Category',
+            'Weight (lbs)', 'Length (ft)', 'Width (ft)', 'Height (ft)',
+            'Area (sq ft)', 'PSF', 'Service Branch',
+            'Climate Control', 'Special Handling'
+        ]
+
+        # Write headers
+        for col_num, header in enumerate(headers, 1):
+            cell = ws.cell(row=1, column=col_num, value=header)
+            cell.fill = header_fill
+            cell.font = header_font
+
+        # Write data
+        for row_num, item in enumerate(items, 2):
+            ws.cell(row=row_num, column=1, value=item.name)
+            ws.cell(row=row_num, column=2, value=item.description or '')
+            ws.cell(row=row_num, column=3, value=item.quantity)
+            ws.cell(row=row_num, column=4, value=item.category or '')
+            ws.cell(row=row_num, column=5, value=float(item.weight) if item.weight else None)
+            ws.cell(row=row_num, column=6, value=float(item.length) if item.length else None)
+            ws.cell(row=row_num, column=7, value=float(item.width) if item.width else None)
+            ws.cell(row=row_num, column=8, value=float(item.height) if item.height else None)
+            ws.cell(row=row_num, column=9, value=float(item.area) if item.area else None)
+            ws.cell(row=row_num, column=10, value=float(item.psf) if item.psf else None)
+            ws.cell(row=row_num, column=11, value=item.service_branch or '')
+            ws.cell(row=row_num, column=12, value='Yes' if item.requires_climate_control else 'No')
+            ws.cell(row=row_num, column=13, value='Yes' if item.requires_special_handling else 'No')
+
+        # Adjust column widths
+        for column in ws.columns:
+            max_length = 0
+            column_letter = column[0].column_letter
+            for cell in column:
+                try:
+                    if cell.value:
+                        max_length = max(max_length, len(str(cell.value)))
+                except:
+                    pass
+            adjusted_width = min(max_length + 2, 50)
+            ws.column_dimensions[column_letter].width = adjusted_width
+
+        # Save to buffer
+        buffer = io.BytesIO()
+        wb.save(buffer)
+        buffer.seek(0)
+
+        return buffer
