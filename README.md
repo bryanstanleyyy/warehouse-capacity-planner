@@ -264,29 +264,68 @@ npm run test:ui
 
 ## Production Deployment
 
-### Quick Start
+### 🚀 Automated Deployment (Recommended)
+
+Deploy to production in **20-30 minutes** with our automated scripts:
 
 ```bash
-# 1. Create production environment file
-cp .env.example .env
-# Edit .env with production values
+# On your Linux server (Ubuntu 20.04+)
+curl -fsSL https://raw.githubusercontent.com/bryanstanleyyy/warehouse-capacity-planner/main/scripts/quick-deploy.sh | bash
+```
 
-# 2. Generate secret key
-python3 -c "import secrets; print(secrets.token_hex(32))"
+This single command:
+- ✅ Installs Docker and dependencies
+- ✅ Configures firewall and security
+- ✅ Obtains SSL certificates (Let's Encrypt)
+- ✅ Generates secure secrets
+- ✅ Builds and starts all services
+- ✅ Runs health checks
 
-# 3. Start services
-docker-compose -f docker-compose.prod.yml up -d
+**What you need:**
+- Ubuntu 20.04+ server (2 CPU, 4GB RAM, 20GB disk)
+- Domain name pointed to server
+- Email for SSL certificates
 
-# 4. Run migrations
-docker exec warehouse-planner-backend-prod flask db upgrade
+For detailed instructions, see **[QUICK-START.md](QUICK-START.md)**
+
+### Alternative: Step-by-Step Deployment
+
+Use individual automation scripts for more control:
+
+```bash
+# 1. Set up server
+bash scripts/setup-server.sh
+
+# 2. Configure environment
+bash scripts/configure-env.sh
+
+# 3. Set up SSL
+sudo bash scripts/setup-ssl.sh
+
+# 4. Deploy application
+bash scripts/deploy.sh
 
 # 5. Verify deployment
-curl https://yourdomain.com/health
+bash scripts/health-check.sh
 ```
+
+### Deployment Scripts
+
+All scripts are in the `scripts/` directory:
+- **quick-deploy.sh** - Fully automated deployment
+- **setup-server.sh** - Server preparation
+- **configure-env.sh** - Environment configuration
+- **setup-ssl.sh** - SSL/TLS setup
+- **deploy.sh** - Application deployment
+- **health-check.sh** - Health verification
+- **backup-database.sh** - Database backup
+- **restore-database.sh** - Database restore
+
+See **[scripts/README.md](scripts/README.md)** for complete documentation.
 
 ### Complete Deployment Guide
 
-For detailed production deployment instructions, see **[DEPLOYMENT.md](DEPLOYMENT.md)**
+For comprehensive deployment instructions, see **[DEPLOYMENT.md](DEPLOYMENT.md)**
 
 The deployment guide covers:
 - **Security Configuration** - SSL/TLS, secrets management, CORS
@@ -311,11 +350,24 @@ Before deploying to production:
 
 ### Deployment Files
 
+**Docker Configuration:**
 - **[docker-compose.prod.yml](docker-compose.prod.yml)** - Production Docker configuration
 - **[docker/nginx-prod.conf](docker/nginx-prod.conf)** - nginx with SSL, rate limiting, security headers
 - **[.env.example](.env.example)** - Environment variables template
+
+**Automation Scripts:**
+- **[scripts/quick-deploy.sh](scripts/quick-deploy.sh)** - One-command automated deployment ⭐
+- **[scripts/setup-server.sh](scripts/setup-server.sh)** - Server preparation (Docker, firewall)
+- **[scripts/configure-env.sh](scripts/configure-env.sh)** - Environment configuration helper
+- **[scripts/setup-ssl.sh](scripts/setup-ssl.sh)** - SSL/TLS certificate setup
+- **[scripts/deploy.sh](scripts/deploy.sh)** - Application deployment automation
+- **[scripts/health-check.sh](scripts/health-check.sh)** - Comprehensive health verification
 - **[scripts/backup-database.sh](scripts/backup-database.sh)** - Automated database backup
 - **[scripts/restore-database.sh](scripts/restore-database.sh)** - Database restore utility
+
+**Documentation:**
+- **[QUICK-START.md](QUICK-START.md)** - Quick deployment guide ⭐
+- **[scripts/README.md](scripts/README.md)** - Scripts reference and workflows
 - **[docs/deployment/deployment-checklist.md](docs/deployment/deployment-checklist.md)** - Pre/post-deployment checklist
 - **[docs/deployment/environment-variables.md](docs/deployment/environment-variables.md)** - Complete variable reference
 
