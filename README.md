@@ -6,7 +6,7 @@ A full-stack web application for warehouse capacity planning and space optimizat
 
 **Project Status:** 🎉 Feature Complete | 24 features implemented | 100% complete
 
-**Live Demo:** *Coming soon*
+**🌐 Live Production Site:** [warehouse-capacity-app.duckdns.org](https://warehouse-capacity-app.duckdns.org)
 
 ## Overview
 
