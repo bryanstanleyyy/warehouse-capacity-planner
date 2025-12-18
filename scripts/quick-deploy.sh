@@ -226,13 +226,26 @@ if [ "$SETUP_SSL" = true ]; then
 
     # Get certificates
     mkdir -p ssl
-    sudo certbot certonly --standalone \
-        -d ${DOMAIN} \
-        -d www.${DOMAIN} \
-        --email ${EMAIL} \
-        --agree-tos \
-        --non-interactive \
-        --expand
+
+    # Check if domain is DuckDNS (or other free DNS that doesn't support www)
+    if [[ $DOMAIN == *.duckdns.org ]] || [[ $DOMAIN == *.freedns.org ]] || [[ $DOMAIN == *.dynu.com ]]; then
+        # DuckDNS and similar services don't support www subdomain
+        print_info "Detected DuckDNS/free DNS - requesting certificate for main domain only"
+        sudo certbot certonly --standalone \
+            -d ${DOMAIN} \
+            --email ${EMAIL} \
+            --agree-tos \
+            --non-interactive
+    else
+        # Regular domain - request for both domain and www
+        sudo certbot certonly --standalone \
+            -d ${DOMAIN} \
+            -d www.${DOMAIN} \
+            --email ${EMAIL} \
+            --agree-tos \
+            --non-interactive \
+            --expand
+    fi
 
     # Copy to project directory
     sudo cp /etc/letsencrypt/live/${DOMAIN}/fullchain.pem ./ssl/
