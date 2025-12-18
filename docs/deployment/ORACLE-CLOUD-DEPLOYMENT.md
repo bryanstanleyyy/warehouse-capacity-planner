@@ -584,6 +584,76 @@ Access your application:
 - Create a new instance following this guide
 - Restore from database backup if you had automated backups configured
 
+### Issue 6: Port 80/443 Not Accessible (SSL Certificate Fails)
+
+**Symptom:** Let's Encrypt cannot connect to port 80, or browser shows ERR_CONNECTION_TIMED_OUT
+
+**This is the MOST COMMON Oracle Cloud issue** - Oracle has multiple firewall layers
+
+**Root Cause:** Oracle Cloud has THREE firewall layers:
+1. ✅ Security Lists (usually configured correctly)
+2. ❌ Network Security Groups (NSG) - often blocks port 80/443
+3. ✅ iptables (configured by scripts)
+
+**Solution - Check Network Security Groups:**
+
+#### Step 1: Check if NSG is attached
+
+1. Oracle Cloud Console → **Compute** → **Instances** → Click your instance
+2. Scroll to **Resources** → **Attached VNICs**
+3. Click on **primaryvnic** (or your VNIC name)
+4. Under **Resources** → Click **Network Security Groups**
+
+**Do you see any NSG listed?**
+
+#### Step 2A: If NSG exists - Add port 80/443 rules
+
+1. Click the **NSG name**
+2. Click **Add Rule**
+3. Add HTTP rule:
+   - **Direction**: Ingress
+   - **Source Type**: CIDR
+   - **Source CIDR**: `0.0.0.0/0`
+   - **IP Protocol**: TCP
+   - **Destination Port Range**: `80`
+   - **Description**: `HTTP`
+4. Click **Add Security Rule**
+5. Repeat for HTTPS (port `443`)
+
+#### Step 2B: If NO NSG - Check VCN Route Table
+
+1. **Networking** → **Virtual Cloud Networks** → Click your VCN
+2. **Route Tables** → **Default Route Table**
+3. Verify route exists:
+   - **Destination CIDR**: `0.0.0.0/0`
+   - **Target Type**: Internet Gateway
+
+If missing:
+1. Click **Add Route Rules**
+2. Configure:
+   - **Target Type**: Internet Gateway
+   - **Destination CIDR**: `0.0.0.0/0`
+3. Click **Add Route Rules**
+
+#### Step 3: Test port 80
+
+From your local computer:
+```bash
+curl -v http://YOUR-IP-ADDRESS
+# Should connect (even if shows error page)
+```
+
+From the server:
+```bash
+# Start test server
+python3 -m http.server 80
+
+# In another terminal/browser, test:
+curl http://localhost
+```
+
+**If still not working**, check if you selected "Use network security groups to control traffic" when creating the instance. If yes, you MUST add rules to that NSG.
+
 ---
 
 ## Post-Deployment
