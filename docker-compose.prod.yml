@@ -68,6 +68,8 @@ services:
         - VITE_API_URL=${VITE_API_URL:-/api/v1}
     container_name: warehouse-planner-frontend-prod
     restart: unless-stopped
+    volumes:
+      - frontend_dist:/usr/share/nginx/html
     networks:
       - frontend
     logging:
@@ -87,6 +89,7 @@ services:
       - ./docker/nginx-prod.conf:/etc/nginx/nginx.conf:ro
       - ./ssl:/etc/nginx/ssl:ro
       - ./logs/nginx:/var/log/nginx
+      - frontend_dist:/usr/share/nginx/html:ro
     networks:
       - frontend
     depends_on:
@@ -113,4 +116,6 @@ volumes:
   postgres_data:
     driver: local
   upload_data:
+    driver: local
+  frontend_dist:
     driver: local
