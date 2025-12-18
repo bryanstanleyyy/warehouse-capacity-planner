@@ -52,7 +52,7 @@ echo "  • An email address for SSL certificates"
 echo "  • About 20-30 minutes"
 echo ""
 
-read -p "Continue with deployment? (y/N): " -n 1 -r
+read -p "Continue with deployment? (y/N): " -n 1 -r </dev/tty
 echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     print_info "Deployment cancelled"
@@ -61,13 +61,13 @@ fi
 
 # Collect configuration
 echo ""
-read -p "Enter your domain name (e.g., example.com): " DOMAIN
+read -p "Enter your domain name (e.g., example.com): " DOMAIN </dev/tty
 if [ -z "$DOMAIN" ]; then
     print_error "Domain is required"
     exit 1
 fi
 
-read -p "Enter your email address: " EMAIL
+read -p "Enter your email address: " EMAIL </dev/tty
 if [ -z "$EMAIL" ]; then
     print_error "Email is required"
     exit 1
@@ -91,7 +91,7 @@ else
     echo "  Server IP: $SERVER_IP"
     echo "  Domain IP: $DNS_IP"
     echo ""
-    read -p "DNS is not configured correctly. Continue anyway? (y/N): " -n 1 -r
+    read -p "DNS is not configured correctly. Continue anyway? (y/N): " -n 1 -r </dev/tty
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         print_info "Please configure DNS first, then run this script again"
@@ -145,7 +145,7 @@ print_step "3/5 - Configuring Environment"
 
 if [ -f ".env" ]; then
     print_info ".env already exists"
-    read -p "Recreate .env file? (y/N): " -n 1 -r
+    read -p "Recreate .env file? (y/N): " -n 1 -r </dev/tty
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         rm .env
