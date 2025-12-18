@@ -1,7 +1,7 @@
 # Multi-stage build for React frontend
 
 # Stage 1: Build
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -14,7 +14,8 @@ RUN npm ci
 # Copy source code
 COPY frontend/ ./
 
-# Build the application
+# Build the application with increased memory limit
+ENV NODE_OPTIONS="--max-old-space-size=768"
 RUN npm run build
 
 # Stage 2: Production
