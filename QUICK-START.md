@@ -115,7 +115,7 @@ This runs comprehensive health checks and shows system status.
 
 ### Method 3: Manual Deployment
 
-Follow the comprehensive step-by-step guide in the [deployment plan](C:\Users\bryan\.claude\plans\humming-knitting-horizon.md) or [DEPLOYMENT.md](DEPLOYMENT.md).
+Follow the comprehensive step-by-step guide in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ---
 
