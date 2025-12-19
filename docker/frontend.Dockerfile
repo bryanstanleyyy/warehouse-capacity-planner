@@ -3,6 +3,10 @@
 # Stage 1: Build
 FROM node:20-alpine AS builder
 
+# Add build arg with default value
+ARG VITE_API_URL=/api/v1
+ENV VITE_API_URL=$VITE_API_URL
+
 WORKDIR /app
 
 # Copy package files
