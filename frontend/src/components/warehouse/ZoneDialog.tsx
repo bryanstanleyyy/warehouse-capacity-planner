@@ -217,7 +217,7 @@ export default function ZoneDialog({
                     label="Min Temperature (°F)"
                     type="number"
                     fullWidth
-                    value={formData.temperature_min || ''}
+                    value={formData.temperature_min ?? ''}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
@@ -232,7 +232,7 @@ export default function ZoneDialog({
                     label="Max Temperature (°F)"
                     type="number"
                     fullWidth
-                    value={formData.temperature_max || ''}
+                    value={formData.temperature_max ?? ''}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
